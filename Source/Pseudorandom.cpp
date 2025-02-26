@@ -13,8 +13,8 @@ namespace cry {
 	Pseudorandom::Pseudorandom(longest seed1, longest seed2) {
 		dev(std::cout << "Seeds are: " << seed1 << " and " << seed2 << std::endl);
 		// find a valid p and q value and store their multiplication
-		unsigned long long p = find_next_factor_prime(seed2);
-		unsigned long long q = find_next_factor_prime(p);
+		longest p = find_next_factor_prime(seed2);
+		longest q = find_next_factor_prime(p);
 		divisor = int256(p).multiply(int256(q));
 		// find a prime number based on the given seed
 		current = int256(find_next_prime(seed1));
@@ -30,7 +30,7 @@ namespace cry {
 		return current;
 	}
 
-	unsigned long long Pseudorandom::find_next_factor_prime(unsigned long long start) {
+	longest Pseudorandom::find_next_factor_prime(longest start) {
 		// set this up to skip over evens
 		if (!(start & 1)) start--;
 
@@ -47,23 +47,21 @@ namespace cry {
 		}
 	}
 
-	unsigned long long Pseudorandom::find_next_prime(unsigned long long start) {
+	longest Pseudorandom::find_next_prime(longest start) {
 
 		// set this up to skip over evens
 		if (!(start & 1)) start--;
 		
 		while (true) {
-			// increment, skipping evens
-			start += 2;
-
-			if (is_prime(start)) {
+			// increment, skipping evens, and check if its prime
+			if (is_prime(start += 2)) {
 				return start;
 			}
 			// keep looking for prime
 		}
 	}
 
-	bool Pseudorandom::is_prime(unsigned long long n) {
+	bool Pseudorandom::is_prime(longest n) {
 		// max factor for n would be n / 2 + 1
 		longest max = (n >> 1) + 1;
 		// check all factors lower

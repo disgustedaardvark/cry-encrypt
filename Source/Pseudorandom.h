@@ -25,18 +25,18 @@ private:
 	/**
 	* Returns true if given n is prime. ASSUMING THAT n IS NOT EVEN!
 	*/
-	bool is_prime(unsigned long long n);
+	bool is_prime(longest n);
 
 	/**
 	* Returns the next prime number from after (not including) start
 	*/
-	unsigned long long find_next_prime(unsigned long long start);
+	longest find_next_prime(longest start);
 	/**
 	* Returns the next prime number from after (not including start) for which:
 	*  n % 4 == 3
 	*  (n-1) / 2 is prime (safe)
 	*/
-	unsigned long long find_next_factor_prime(unsigned long long start);
+	longest find_next_factor_prime(longest start);
 
 public:
 	/**
