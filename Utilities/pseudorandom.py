@@ -1,3 +1,10 @@
+#
+#  pseudorandom.py
+#    For experimenting with pseudorandom number generation, specifically
+#    Blum Blum Shub. Functions to find suitable prime numbers and test
+#    how long it takes for the algorithm to cycle.
+#  Note: code is awful test code, not for shipping in any capacity.
+#
 
 def is_prime(n):
     if n < 2: return False
@@ -36,18 +43,6 @@ def next_safe_congruent_prime_from(n):
         if n[0] % 4 == 3:
             return n
         else: n = (n[0] + 2, 0) # skip evens
-
-seed = next_prime_from(89775676)
-p = next_safe_congruent_prime_from(10**9 + 10**7)[1]
-q = next_safe_congruent_prime_from(11**8)[1]
-
-print("Seed:", seed)
-print("p:", p)
-print("q:", q)
-print("pq:", (p*q))
-
-# check for co prime
-print("seed%p:",seed%p,"seed%q:",seed%q)
 
 def bbs(x):
     return (x**2) % (p*q)
@@ -110,5 +105,22 @@ def until_cycle():
             break
         i += 1
 
-#until_cycle()
+def main():
+    seed = next_prime_from(89775676)
+    p = next_safe_congruent_prime_from(10**9 + 10**7)[1]
+    q = next_safe_congruent_prime_from(11**8)[1]
+
+    print("Seed:", seed)
+    print("p:", p)
+    print("q:", q)
+    print("pq:", (p*q))
+
+    # check for co prime
+    print("seed%p:",seed%p,"seed%q:",seed%q)
+
+    # cycling time
+    until_cycle()
+
+if __name__=='__main__':
+    main()
     
