@@ -5,6 +5,7 @@ namespace cry {
 	/**
 	* Responsible for post-processing an encrypted file (or pre-processing when decrypting) to 
 	* obfuscate the data and make hashkey identification less probable.
+	* NOTE: this currently cannot confirm if a key is correct, so may make a file unrecoverable.
 	*/
 	class Scrambler {
 	private:
