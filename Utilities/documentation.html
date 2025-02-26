@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Cry Encryption Docs </title>
+<style>
+	body { color: white; background-color: black; font-family: "Consolas", "Courier", monospace, sans-serif; font-size: 16px; padding-left: 12px;}
+	.spec-table { padding: 14px; border: none; text-align: left; border-collapse: collapse;}
+	.spec-table td, th { min-width: 144px; }
+	.spec-table th { font-weight: bold; }
+	.spec-table tr { border-bottom: 1px solid gray; }
+	.spec-table tr:first-child { border-bottom: 4px solid white; }
+	.spec-table td:first-child {color: purple; border-right: 3px dotted white;}
+	.section { width: 75%; margin-bottom: 32px;}
+	h3 { text-decoration: underline; text-decoration-color: purple; }
+	
+</style>
+</head>
+
+<body>
+<h1> Documentation - Cry Encryption </h1>
+
+Docs version 1.0.0.2 for Cry version 1.0.0.0
+<div class='section'>
+<h3> .cry encrypted file specification </h3>
+<table class='spec-table'>
+	<tr> 
+		<th style='width:20%'> Byte Address </th> 
+		<th> Type </th> 
+		<th> Name </th>
+		<th> Description </th>
+	</tr>
+	<tr>
+		<td> 0x00-0x03 (04 bytes) </td>
+		<td> int </td>
+		<td> Version </td>
+		<td> The version of Cry used to encrypt this file. Formatted per byte like [patch version, minor version, major version, branch version] -- little endian integer (this may depend on platform?). </td>
+	</tr>
+	<tr>
+		<td> 0x04-0x23 (32 bytes) </td>
+		<td> char[] </td>
+		<td> Key Test </td>
+		<td> When the decryption process is applied, these 32 bytes decrypt to "CryTearsBreakHeartsLockPromises" if the key is correct. This therefore includes a string termination character (when decrypted). </td>
+	</tr>
+	<tr>
+		<td> 0x24-0x43 (32 bytes) </td>
+		<td> char[] </td>
+		<td> Target File Extension </td>
+		<td> Leading with a dot (.) and ending in 0x00 (i.e. \0), the ciphertext file extension of the file that was encrypted to produce this file. </td>
+	</tr>
+	<tr>
+		<td> 0x44... (n bytes) </td>
+		<td> bytes </td>
+		<td> Encrypted File </td>
+		<td> The ciphertext of the original file. </td>
+	</tr>
+</table>
+</div>
+<div class='section'>
+<h3> $ cry command syntax </h3>
+<table class='command-table'>
+	<tr>
+		<th> Argument(s) Syntax </th>
+		<th> Purpose </th>
+		<th> Example </th>
+	</tr>
+</table>
+</div>
+<div class='section'>
+<h3> The encryption process </h3>
+<h4> Setup: </h4>
+This step aims to initialise all components to encrypt the main file and write the header.
+<ul>
+<li>Key string is divided into 4 pieces of unequal deterministic size.</li>
+<li>Each quarter is hashed separately to 8 bytes.</li>
+<li>32-byte hashkey produced by transforming these linearly and combining them.</li>
+<li>Pseudorandom generator initialised using information from both hashkey and key as seed.</li>
+<li>Version written to encrypted file as header, unencrypted.</li>
+<li>Key Test and Target Extension written into header using buffer encryption as below.</li>
+</ul>
+<h4> Buffer Encryption: </h4>
+This step aims to process each sequence of 32-bytes in the original file into encrypted data, and store them sequentially in the encrypted file. During encryption, the stored encryption hashkey is transformed.
+<ul>
+<li> Input file grouped into 32-byte buffered chunks.</li>
+<li> Buffer is xored with hashkey. </li>
+<li> New hash input is generated based on current key and pseudorandom value. </li>
+<li> New hashkey adopted using transformed hash input. </li>
+</ul>
+<h4> Scrambling: </h4>
+This step aims to add a layer of encryption derived from a different hash of the key, adding an additional layer of obfuscation.
+<ul>
+<li> todo </li>
+</ul>
+<h4> Asymmetric Processing: </h4>
+<ul>
+<li> todo </li>
+</ul>
+</div>
+</body>
+</html>
