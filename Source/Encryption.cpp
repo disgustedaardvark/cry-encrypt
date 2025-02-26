@@ -37,12 +37,12 @@ namespace cry {
 		pseudoseed += ((longest) (0x3)) << 50;
 		// initialise the generators
 		random_encryptor = Pseudorandom(pseudoseed >> 32, pseudoseed >> 40);
-		// transform the seed some more for the other generato
-		pseudoseed = ~pseudoseed;
+		// transform the seed some more for the other generator
+		/*pseudoseed = ~pseudoseed;
 		pseudoseed += pseudoseed % 3000000;
 		pseudoseed += 1000000000000;
 		pseudoseed = pseudoseed + (((longest)(0x03)) << (8 * (sizeof(longest) - 1))); // keep the seed high
-		random_scrambler = Pseudorandom(pseudoseed >> 32, pseudoseed >> 40);
+		random_scrambler = Pseudorandom(pseudoseed >> 32, pseudoseed >> 40);*/
 		dev(std::cout << "Pseudorandom initialised." << std::endl);
 
 		// file paths
@@ -62,8 +62,8 @@ namespace cry {
 		// hash each quarter of the key to an 8 byte value -- therefore a 32 byte unique hash
 		std::hash<std::string> hasher;
 		int key_length = key.length();
-		// cut off the first three bits of the hash so we can multiply it without issue
-		size_t whole_key_hash = hasher(key) xor (((size_t)7) << 61);
+		// cut off the first bit of the hash so we can multiply it without issue
+		size_t whole_key_hash = hasher(key) & (~(((size_t)1) << 63));
 
 		for (int i = 0; i < (BUFFER_SIZE / sizeof(size_t)); i++) {
 			// grab part of the password for each quarter (8 bytes)
@@ -423,46 +423,5 @@ namespace cry {
 
 	void Encryption::destroy_key() {
 		key.erase(0);
-	}
-
-	void Encryption::scramble(Mode mode) {
-		// note: just assumed file doesn't have more than 2^64 bytes
-		// swap twice as many times as there are bytes in the file ish
-		/*if (mode == ENCRYPT) {
-			// if encrypting, scramble based on how much data there is in the outfile
-			longest file_size = bytes_written;
-		}
-		else (mode == DECRYPT) {
-			// if decrypting, unscramble based on how much data there is to process
-		}
-		
-		long long iterations = file_size * 2;
-		std::cout << "Scrambling file for " << iterations << " iterations " << std::endl;
-		// jump around the file and swap between two positions
-		unsigned long long pos1, pos2;
-		// so we can use it in mod calculations
-		unsigned long long size256(file_size);
-		for (uint64_t i = 0; i < iterations; i++) {
-			// generate two random file positions
-			pos1 = random_scrambler.next().modulo(size256).as_long();
-			pos2 = random_scrambler.next().modulo(size256).as_long();
-			std::cout << "Scramble Pos: " << pos1 << ", " << pos2 << std::endl;
-			// never scramble the header - just skip in this case
-			if (pos1 < BODY || pos2 < BODY) continue;
-			// read one byte
-			char byte1 = 0;
-			output.seekg(pos1);
-			output.read(&byte1, 1);
-			// read the other byte
-			char byte2 = 0;
-			output.seekg(pos2);
-			output.read(&byte2, 1);
-			// then swap them
-			output.seekg(pos1);
-			output.write(&byte2, 1);
-			output.seekg(pos2);
-			output.write(&byte1, 1);
-		}
-		// file has been scrambled*/
 	}
 }

@@ -131,6 +131,7 @@
     <ClInclude Include="Source\Dev.h" />
     <ClInclude Include="Source\Encryption.h" />
     <ClInclude Include="Source\Pseudorandom.h" />
+    <ClInclude Include="Source\Scrambler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BigInt.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="Source\Encryption.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Pseudorandom.cpp" />
+    <ClCompile Include="Source\Scrambler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

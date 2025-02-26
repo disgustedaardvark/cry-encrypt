@@ -4,6 +4,7 @@
 #include "Dev.h"
 #include "Pseudorandom.h"
 
+#define MID_EXTENSION ".uns"
 #define FILE_EXTENSION ".cry"
 #define KEY_TEST "CryTearsBreakHeartsLockPromises"
 #define HEADER 0
@@ -52,13 +53,10 @@ namespace cry {
 		longest bytes_written;
 
 		/**
-		* Stable long-cycle random number algorithm for encryption
+		* Stable long-cycle random number algorithm for stream encryption
 		*/
 		Pseudorandom random_encryptor;
-		/**
-		* Long-cycle random number algorithm for SCRAMBLING BYTES
-		*/
-		Pseudorandom random_scrambler;
+
 		/**
 		* Turns the given key into a full hashed key of BUFFER_SIZE (32) bytes and places it into the input array buffer
 		*/
@@ -123,12 +121,6 @@ namespace cry {
 		* read directly from the file via fill_buffer (or read_int).
 		*/
 		void write_buffer();
-
-		/**
-		* Scramble the bytes in the current output file (deterministically).
-		* Such that scrambling is equivalent to unscrambling.
-		*/
-		void scramble(Mode mod);
 
 		/**
 		* Writes the full contents of the buffer to the output file, regardless of what they are or where they came from.

@@ -1,2 +1,4 @@
 # Cry Encryption
-see documentation: Utilities/documentation.html
+C++ local encryption software for windows.
+
+See documentation: Utilities/documentation.html
