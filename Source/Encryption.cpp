@@ -243,8 +243,14 @@ namespace cry {
 		// make the new key
 		generate_hash_key(random_bytes, key_hash);
 
+		
+		dev(std::cout << "Encrypting plainbytes: " << std::hex);
 		// xor all the bits to encrypt with this key
-		for (int i = 0; (i < BUFFER_SIZE) && ((buffer[i] = buffer[i] xor key_hash[i]) || 1); i++);
+		for (int i = 0; i < BUFFER_SIZE; i++) {
+			dev(std::cout << (int) buffer[i]);
+			buffer[i] = buffer[i] xor key_hash[i];
+		}
+		dev(std::cout << std::endl);
 #endif
 	}
 

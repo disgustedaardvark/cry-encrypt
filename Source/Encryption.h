@@ -132,7 +132,11 @@ namespace cry {
 		* Also moves the buffer_source.
 		*/
 		void reset_cursor();
+		
 #if DEV_MODE==1
+		/**
+		* Print contents of buffer to console. For security reasons, not including in non-dev versions
+		*/
 		void print_buffer(PrintMode mode);
 #endif
 

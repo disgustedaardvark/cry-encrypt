@@ -6,7 +6,7 @@
 typedef unsigned char byte;
 typedef unsigned long long longest;
 typedef uint32_t int32;
-#define DEV_MODE 0
+#define DEV_MODE 1
 #define SHELL_MODE 0
 #if DEV_MODE==1
 #define dev(X) X;

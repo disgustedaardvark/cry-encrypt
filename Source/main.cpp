@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	string file_in_name = argv[1];
 #else
 	// TODO line input here instead
-	input_path = "C:\\Users\\samue\\Documents\\Coding\\Encryption\\Cry\\TestData\\empty.bmp";
+	input_path = "C:\\Users\\samue\\Documents\\Coding\\Encryption\\Cry\\TestData\\encrypt_test.txt";
 #endif
 	key = "password2";
 
