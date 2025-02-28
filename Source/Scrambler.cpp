@@ -1,7 +1,6 @@
 #include "Scrambler.h"
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 
 namespace cry {
 

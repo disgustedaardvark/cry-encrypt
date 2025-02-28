@@ -4,7 +4,6 @@
 #include "Dev.h"
 #include "Pseudorandom.h"
 
-#define MID_EXTENSION ".uns"
 #define FILE_EXTENSION ".cry"
 #define KEY_TEST "CryTearsBreakHeartsLockPromises"
 #define HEADER 0
