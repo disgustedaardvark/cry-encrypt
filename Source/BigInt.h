@@ -29,11 +29,12 @@
 #define BI_INT_CLASS BI_BIG_INT_CLASS
 #define BI_INT_SIZE BI_BIG_INT_SIZE
 
-#define GEN_CLASS(X) X
+#define GEN_CLASS(X) X;\nX
 
 typedef unsigned char byte;
 
 namespace bigint {
+
 
 	/**
 	* For storage of large unsigned integers (e.g. used in cryptography algorithms)
