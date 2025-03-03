@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Dev.h"
 #include "Pseudorandom.h"
+#include "Hash.h"
 
 #define FILE_EXTENSION ".cry"
 #define KEY_TEST "CryTearsBreakHeartsLockPromises"

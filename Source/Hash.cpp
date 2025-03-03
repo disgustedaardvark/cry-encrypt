@@ -1,10 +1,22 @@
 #include "Hash.h"
 #include "BigInt.h"
+#include "Dev.h"
 
 namespace cry {
 
-	void sha256(std::string input, byte hash[32]) {
+#if DEV_MODE==1
+	void print_hash(byte hash[32]) {
+		for (int i = 0; i < 32; i++) {
+			printf("%02x", (int)hash[i]);
+		}
+		printf("\n");
+	}
+#endif
+
+
+	void sha256(std::string input, byte hash_store[32]) {
 		// implementation src: wikipedia https://en.wikipedia.org/wiki/SHA-2#Pseudocode
+		dev(std::cout << "Hashing" << std::endl);
 
 		// initialise initial hash values, which are the fractional parts of the square roots of first 8 primes
 		int32 hash[8] = {
@@ -58,7 +70,7 @@ namespace cry {
 		}
 
 		// don't leak memory
-		delete padded_input;
+		delete[] padded_input;
 
 		// break into 32-bit chunks
 		// every 16 of these is 512 bits.
@@ -123,6 +135,13 @@ namespace cry {
 			hash[7] += h;
 		}
 		// final (big endian) hash is now loaded into result array
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 4; j++) {
+				// load each int32 into correct byte positions
+				int index = i * 4 + j;
+				hash_store[index] = (byte) (0xff & ((hash[i]) >> (j * 8)));
+			}
+		}
 	}
 
 	int32 rotate_right(int32 x, int32 n) {

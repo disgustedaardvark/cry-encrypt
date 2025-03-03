@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <iostream>
 #define forever while(1)
 #define until(X) while(!(X))
 typedef unsigned char byte;

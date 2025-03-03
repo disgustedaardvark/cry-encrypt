@@ -7,7 +7,7 @@
 using namespace std;
 using namespace cry;
 
-#define DRIVER 1
+#define DRIVER 0
 
 #if DRIVER==1
 int main(int argc, char* argv[]) {
@@ -78,8 +78,10 @@ int main(int argc, char* argv[]) {
 // Here a test main method for other purposes
 int main() {
 
-	bigint::int512 test;
-	test.println();
+	// test the hashing system
+	byte hash[32] = { 0 };
+	sha256("", hash);
+	print_hash(hash);
 
 	return 0;
 }

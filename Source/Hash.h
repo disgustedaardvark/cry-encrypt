@@ -12,4 +12,7 @@ namespace cry {
 	*/
 	void sha256(std::string input, byte hash[32]);
 
+#if DEV_MODE==1
+	void print_hash(byte hash[32]);
+#endif
 }
