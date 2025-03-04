@@ -7,7 +7,7 @@
 using namespace std;
 using namespace cry;
 
-#define DRIVER 0
+#define DRIVER 1
 
 #if DRIVER==1
 int main(int argc, char* argv[]) {

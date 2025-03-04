@@ -59,34 +59,17 @@ namespace cry {
 	}
 
 	void Encryption::generate_hash_key(std::string key, byte resulting_key_hash[BUFFER_SIZE]) {
-		// hash each quarter of the key to an 8 byte value -- therefore a 32 byte unique hash
-		std::hash<std::string> hasher;
-		int key_length = key.length();
-		// cut off the first bit of the hash so we can multiply it without issue
-		size_t whole_key_hash = hasher(key) & (~(((size_t)1) << 63));
+		// hash the input key via a cryptographically secure method to 32 bytes
+		sha256(key, resulting_key_hash);
 
-		for (int i = 0; i < (BUFFER_SIZE / sizeof(size_t)); i++) {
-			// grab part of the password for each quarter (8 bytes)
-			std::string quarter = key.substr((i * whole_key_hash) % key_length);
-			// hash the quarter
-			size_t quarter_hash = hasher(quarter);
-			// shift some of the keys around (deterministically) to reduce obvious patterns
-			// add the whole 8 bytes over the buffer
-			byte* write_address = &(resulting_key_hash[i * sizeof(size_t)]);
-			*((size_t*)write_address) = quarter_hash + i * 7369;
-		}
-		dev(std::cout << "HASHED KEY IS " << std::hex << whole_key_hash << std::endl);
-		dev(std::cout << "FULL HASHED 32 BYTE KEY IS ";
+		dev(std::cout << "HASHED 32 BYTE KEY IS ";
 			for (int i = 0; i < BUFFER_SIZE; i++) std::cout << std::hex << (int)resulting_key_hash[i];
 			std::cout << std::endl);
 	}
 
 	void Encryption::generate_hash_key(byte key_hash[BUFFER_SIZE], byte resulting_key_hash[BUFFER_SIZE]) {
-		// turn given key into a string
-		std::string from_bytes = "";
-		for (int i = 0; i < BUFFER_SIZE; i++) from_bytes += key_hash[i];
-		// (re)hash it
-		generate_hash_key(from_bytes, resulting_key_hash);
+		// (re)hash the given bytes with sha256
+		sha256(key_hash, 32, resulting_key_hash);
 	}
 
 	void Encryption::reset_cursor() {

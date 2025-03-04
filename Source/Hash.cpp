@@ -27,7 +27,6 @@ namespace cry {
 
 	void sha256(std::string input, byte hash_store[32]) {
 		// implementation src: wikipedia https://en.wikipedia.org/wiki/SHA-2#Pseudocode
-		dev(std::cout << "Hashing " << input << std::endl);
 
 		// initialise initial hash values, which are the fractional parts of the square roots of first 8 primes
 		int32 hash[8] = {
