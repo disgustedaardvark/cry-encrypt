@@ -13,14 +13,25 @@ namespace cry {
 	}
 #endif
 
+	void sha256(byte hash[32]) {
+		return sha256(hash, 32, hash);
+	}
+
+	void sha256(byte* bytes, int32 length, byte hash[32]) {
+		std::string hash_input = "";
+		for (int32 i = 0; i < length; i++) {
+			hash_input += bytes[i];
+		}
+		return sha256(hash_input, hash);
+	}
 
 	void sha256(std::string input, byte hash_store[32]) {
 		// implementation src: wikipedia https://en.wikipedia.org/wiki/SHA-2#Pseudocode
-		dev(std::cout << "Hashing" << std::endl);
+		dev(std::cout << "Hashing " << input << std::endl);
 
 		// initialise initial hash values, which are the fractional parts of the square roots of first 8 primes
 		int32 hash[8] = {
-			0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 
+			0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
 			0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 };
 
 		// and an array of round constants (first 32 bits of fractional parts of cube rootsof first 64 primes)
@@ -41,13 +52,17 @@ namespace cry {
 		longest bit_length = string_bit_length + 1 + zero_padding + 64;
 		// bit length is now a multiple of 512
 		longest byte_length = bit_length / 8;
+
+		// TODO potential memory leak if crash occurs / early return during this method
 		// make an array to store the padded input bytes
 		byte* padded_input = new byte[byte_length];
 		// and fill it with the bytes of:
 		// <original message> 1 <zero_padding to multiple 512> <64 bit int -- string length>
 		// first copy message bytes in
 		for (longest i = 0; i < input.length(); i++) {
-			padded_input[i] = (byte) input[i];
+			padded_input[i] = (byte) input[i]; 
+			// buffer can't overrun here because padded_input length must be greater than string input length
+			// so don't worry :)
 		}
 		// write the chunks of 1-0s
 		// write the 1---- bit first
@@ -69,29 +84,27 @@ namespace cry {
 			byte_of_long++;
 		}
 
-		// don't leak memory
-		delete[] padded_input;
-
-		// break into 32-bit chunks
-		// every 16 of these is 512 bits.
-		int32* chunks = (int32*) padded_input;
+		// operate on 512 bit chunks at a time
 		int chunk32_count = byte_length / 4;
 		int chunk512_count = chunk32_count / 16;
 		for (int i = 0; i < chunk512_count; i++) {
+
 			// for each 512 bit chunk
 			word schedule_array[64];
 			// copy this chunk into the first 16 words of the array
 			for (int j = 0; j < 16; j++) {
-				schedule_array[j] = chunks[i * 16 + j];
+				int32 chunk = to_big_endian(&padded_input[i * 64 + j * 4]);
+				schedule_array[j] = chunk;
 			}
+
 			// extend first 16 ints into remaining 48
 			for (int j = 16; j < 64; j++) {
 				word s0 = (rotate_right(schedule_array[j - 15], 7))
 					xor (rotate_right(schedule_array[j - 15], 18))
-					xor (rotate_right(schedule_array[j - 15], 3));
+					xor (schedule_array[j - 15] >> 3);
 				word s1 = (rotate_right(schedule_array[j - 2], 17))
 					xor (rotate_right(schedule_array[j - 2], 19))
-					xor (rotate_right(schedule_array[j - 2], 10));
+					xor (schedule_array[j - 2] >> 10);
 				schedule_array[j] = schedule_array[j - 16] + s0 + schedule_array[j - 7] + s1;
 			}
 
@@ -134,17 +147,28 @@ namespace cry {
 			hash[6] += g;
 			hash[7] += h;
 		}
+
 		// final (big endian) hash is now loaded into result array
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 4; j++) {
 				// load each int32 into correct byte positions
 				int index = i * 4 + j;
-				hash_store[index] = (byte) (0xff & ((hash[i]) >> (j * 8)));
+				hash_store[index] = (byte) (0xff & ((hash[i]) >> (24 - j * 8)));
 			}
 		}
+
+		// don't leak memory
+		delete[] padded_input;
 	}
 
 	int32 rotate_right(int32 x, int32 n) {
-		return x >> n | (x << (32 - n));
+		return (x >> n) | (x << (32 - n));
+	}
+
+	int32 to_big_endian(const byte* bytes) {
+		return (int32(bytes[0]) << 24) |
+			   (int32(bytes[1]) << 16) |
+			   (int32(bytes[2]) << 8) |
+			   (int32(bytes[3]));
 	}
 }
