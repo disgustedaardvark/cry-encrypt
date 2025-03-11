@@ -23,12 +23,12 @@ namespace cry {
 		// leave some space at the top of the pseudoseed to avoid overflows when we're about to do silly transformations
 		pseudoseed = pseudoseed xor (((longest)0xa0) << (8 * (sizeof(longest) - 1)));
 		// the pseudoseed should not be dependent only on the hash
-		// so that if attackers calculate the hash but do not the key,
+		// so that if attackers calculate the hash but do not calculate the key,
 		// they cannot derive the pseudorandom transformation from the original hashkey
 		// to achieve this, transform the pseudoseed based on the key 1) length 2) ascii total
 		pseudoseed += (key.length() * 50000);
 		for (int i = 0; i < key.length(); i++) {
-			pseudoseed += (key[i] * 3123); // arbitrary constant
+			pseudoseed += (key[i] * 9123); // arbitrary constant
 		} // these numbers are large so they have a significant impact
 
 		dev(std::cout << "Generated pseudoseed " << pseudoseed << std::endl);
@@ -37,12 +37,7 @@ namespace cry {
 		pseudoseed += ((longest) (0x3)) << 50;
 		// initialise the generators
 		random_encryptor = Pseudorandom(pseudoseed >> 32, pseudoseed >> 40);
-		// transform the seed some more for the other generator
-		/*pseudoseed = ~pseudoseed;
-		pseudoseed += pseudoseed % 3000000;
-		pseudoseed += 1000000000000;
-		pseudoseed = pseudoseed + (((longest)(0x03)) << (8 * (sizeof(longest) - 1))); // keep the seed high
-		random_scrambler = Pseudorandom(pseudoseed >> 32, pseudoseed >> 40);*/
+
 		dev(std::cout << "Pseudorandom initialised." << std::endl);
 
 		// file paths
@@ -293,8 +288,13 @@ namespace cry {
 		// write the header:
 		// first, the version info
 		write_int(VERSION);
+		// the 31 bytes for the Key Test
+		unsigned char key_header[32] = KEY_TEST;
+		// then the 32nd byte is the scramble hint
+		key_header[31] = (byte)0; // TODO implement scrambler
+
 		// encrypt the Key Test bytes (used to confirm a key is correct before further decrypting)
-		add_to_buffer((char*) KEY_TEST);
+		add_to_buffer((char*)key_header);
 		encrypt_buffer();
 		write_full_buffer();
 
@@ -350,11 +350,16 @@ namespace cry {
 		// first an integer (the version of Cry that encrypted this)
 		int32 encryption_version = read_int();
 		std::cout << "File was encrypted with version " << version_as_string(encryption_version) << std::endl;
+
+		// this byte indicates whether or not the file body needs to be unscrambled; == 1 if it does
+		byte scramble_hint = 0;
+
 		// then a buffer: the Key tester
 		if (fill_buffer()) {
 			// TODO and restructure this whole thing
 		}
 		else {
+
 			decrypt_buffer();
 			std::cout << "Decrypted Key Test as : " << buffer << std::endl;
 			if (strcmp(buffer, KEY_TEST) == 0) {
@@ -367,6 +372,9 @@ namespace cry {
 				file.close(); output.close();
 				return;
 			}
+
+			// read the final byte of this buffer -- the scrambler hint; whether we should unscramble or not
+			scramble_hint = buffer[BUFFER_SIZE - 1];
 		}
 
 		// read the next buffer's worth of data to figure out the output file extension
@@ -393,17 +401,20 @@ namespace cry {
 			return;
 		}
 
-		// unscramble bytes in file body
-		//this->scramble();
-		// jump back to the right part of the file to decrypt
-		//file.seekg(BODY);
+		// TODO this should happen in the Main pipeline, not here
+		if (scramble_hint == (byte)1) {
+			// unscramble bytes in file body
+			//this->scramble();
+			// jump back to the right part of the file to decrypt
+			//file.seekg(BODY);
+		}
 
 		// decrypt file body:
 		// keep decrypting chunk by chunk until done
 		until (this->process_next(DECRYPT));
 
 		std::cout << "Decryption complete" << std::endl;
-		
+
 		// always close the files once done!
 		file.close();
 		output.close();

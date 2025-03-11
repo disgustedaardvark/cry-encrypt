@@ -321,9 +321,14 @@ namespace bigint {
 	}
 
 	unsigned long long BI_INT_CLASS::as_long() {
+		return this->as_long_from(0);
+	}
+
+
+	unsigned long long BI_INT_CLASS::as_long_from(unsigned int n) {
 		unsigned long long lower = 0;
-		for (int i = 0; i < 8; i++) {
-			lower |= (((unsigned long long) (bytes[i])) << (i * 8));
+		for (int i = n; i < n + 8; i++) {
+			lower |= (((unsigned long long) (bytes[i])) << ((i-n) * 8));
 		}
 		return lower;
 	}

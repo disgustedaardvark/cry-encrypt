@@ -23,9 +23,9 @@ Docs version 1.0.0.2 for Cry version 1.0.0.0
 <div class='section'>
 <h3> .cry encrypted file specification </h3>
 <table class='spec-table'>
-	<tr> 
-		<th style='width:20%'> Byte Address </th> 
-		<th> Type </th> 
+	<tr>
+		<th style='width:20%'> Byte Address </th>
+		<th> Type </th>
 		<th> Name </th>
 		<th> Description </th>
 	</tr>
@@ -36,10 +36,16 @@ Docs version 1.0.0.2 for Cry version 1.0.0.0
 		<td> The version of Cry used to encrypt this file. Formatted per byte like [patch version, minor version, major version, branch version] -- little endian integer (this may depend on platform?). </td>
 	</tr>
 	<tr>
-		<td> 0x04-0x23 (32 bytes) </td>
+		<td> 0x04-0x22 (31 bytes) </td>
 		<td> char[] </td>
 		<td> Key Test </td>
-		<td> When the decryption process is applied, these 32 bytes decrypt to "CryTearsBreakHeartsLockPromises" if the key is correct. This therefore includes a string termination character (when decrypted). </td>
+		<td> When the decryption process is applied, these 31 bytes decrypt to "AmyAkaSpentGladiatorVersionTwo" if the key is correct. This therefore includes a string termination character (when decrypted). </td>
+	</tr>
+	<tr>
+		<td> 0x23 (01 byte) </td>
+		<td> unsigned char </td>
+		<td> Scramble Hint </td>
+		<td> If this byte == 0x01 once decrypted, the Encrypted File body section has been randomly scrambled and should be unscrambled before decryption. </td>
 	</tr>
 	<tr>
 		<td> 0x24-0x43 (32 bytes) </td>

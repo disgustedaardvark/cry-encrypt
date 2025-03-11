@@ -163,8 +163,15 @@ namespace bigint {
 		byte* get_byte_array();
 
 		/**
-		* Returns the first 64 bits of this number as a long (so may lose information if larger)
+		* Returns the first 64 bits of this number as a long (so may lose information if larger), starting from least significant
 		*/
 		unsigned long long as_long();
+
+		/**
+		* returns the first 64 bits of this number as a long FROM the nth (little endian) byte.
+		* WARNING: assumes n is <= 24 (for a 32 byte number), so does not check for memory access safety!
+		*/
+		unsigned long long as_long_from(unsigned int n);
+
 	};
 }

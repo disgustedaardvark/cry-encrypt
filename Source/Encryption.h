@@ -6,7 +6,7 @@
 #include "Hash.h"
 
 #define FILE_EXTENSION ".cry"
-#define KEY_TEST "CryTearsBreakHeartsLockPromises"
+#define KEY_TEST "AmyAkaSpentGladiatorVersionTwo"
 #define HEADER 0
 // where the payload (ciphertext) starts
 #define BODY 0x44

@@ -1,16 +1,23 @@
 #include "Scrambler.h"
+#include "Encryption.h"
+#include "Hash.h"
 #include <fstream>
 #include <iostream>
 
 namespace cry {
 
 	Scrambler::Scrambler(std::string key) {
-		// hash the key, in a method distinct to the one in the encryption system
-		std::hash<std::string> hasher;
-		key += key; // double up the key -- this will [should] produce a distinct hash
-		longest whole_key_hash = hasher(key);
+		// hash the key
+		key += key; // double up the key -- this will [should] produce a distinct hash from normal password
+		byte hash[32] = { 0 };
+		sha256(key, hash);
+		// convert to a full integer
+		int256 generated_bytes(hash);
+		longest hash1 = generated_bytes.as_long();
+		longest hash2 = generated_bytes.as_long_from(8);
+
 		// make a random generator using hash data as a seed
-		random = Pseudorandom(whole_key_hash >> 28, (~whole_key_hash) >> 38);
+		random = Pseudorandom(hash1 >> 26, hash2 >> 35);
 	}
 
 	void Scrambler::scramble(std::string file_path) {
@@ -24,8 +31,8 @@ namespace cry {
 			return;
 		}
 
-		// start swapping from first byte in file
-		longest pos = 0;
+		// start swapping from first byte in file body (do not touch the header)
+		longest pos = BODY;
 		// the two bytes that may be swapped each iter
 		char byte1;
 		char byte2;
