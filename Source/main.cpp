@@ -2,7 +2,9 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 #include "Encryption.h"
+#include "WinBase.h"
 
 using namespace std;
 using namespace cry;
@@ -11,6 +13,78 @@ using namespace cry;
 
 #if DRIVER==1
 int main(int argc, char* argv[]) {
+
+	// turn args into c strings
+	vector<string> arguments;
+	vector<string> flags; // TODO
+	for (int i = 0; i < argc; i++) {
+		char* arg = argv[i];
+		arguments.push_back((string) arg);
+	}
+
+	// process arguments:
+	
+	// first, utility commands
+	switch (argc) {
+	case 1:
+		// if there are no arguments, error.
+		cerr << "No arguments specified" << endl;
+		return 1;
+	case 2:
+		// if there is one argument, command is legal for 'help' and 'version'
+		if (arguments.at(1) == "help") {
+			// TODO
+			return 0;
+		}
+		else if (arguments.at(1) == "version") {
+			cout << "Cry version is " << version_as_string() << endl;
+			return 0;
+		}
+		else {
+			cerr << "Malformed command" << endl;
+			return 1;
+		}
+	default:
+	}
+
+	// determine mode of operation
+	if (arguments.at(1) == "scramble") {
+		// call the scrambler TODO
+	}
+	else if (arguments.at(1) == "encrypt") {
+
+	}
+	else if (arguments.at(2) == "decrypt") {
+
+	}
+	else {
+		// otherwise, assume this is the shorthand command:
+		// $ cry filename key
+		// so check file exists
+		if (!fileExists(arguments.at(1))) {
+			// file does not exist/inaccessible
+			cerr << "Argument #1: " << arguments.at(1) << " is not an accessible file; cannot process" << endl;
+			return 1;
+		}
+		if (argc < 3) {
+
+		}
+	}
+	
+}
+
+namespace cry {
+	// utility methods
+
+	/**
+	* returns true if given file exists in windows file system and can be accessed
+	*/
+	bool fileExists(string path) {
+		return GetFileAttributes(wstring(path.begin(), path.end()).c_str()) == INVALID_FILE_ATTRIBUTES;
+	}
+}
+
+int test() {
 
 	// if input_path is a .cry file, decrypt it and store in a file based on the header data
 	// otherwise, encrypt it the file and store in a corresponding .cry file
