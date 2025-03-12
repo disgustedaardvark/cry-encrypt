@@ -3,14 +3,19 @@
 <head>
 <title> Cry Encryption Docs </title>
 <style>
-	body { color: white; background-color: black; font-family: "Consolas", "Courier", monospace, sans-serif; font-size: 16px; padding-left: 12px;}
-	.spec-table { padding: 14px; border: none; text-align: left; border-collapse: collapse;}
+	body { color: white; background-color: black; font-family: "Consolas", "Courier", monospace, sans-serif; font-size: 16px; padding-left: 12px; }
+	.spec-table { padding: 14px; border: none; text-align: left; border-collapse: collapse; }
 	.spec-table td, th { min-width: 144px; }
 	.spec-table th { font-weight: bold; }
 	.spec-table tr { border-bottom: 1px solid gray; }
 	.spec-table tr:first-child { border-bottom: 4px solid white; }
-	.spec-table td:first-child {color: purple; border-right: 3px dotted white;}
-	.section { width: 75%; margin-bottom: 32px;}
+	.spec-table td:first-child { color: purple; border-right: 3px dotted white; }
+	.section { width: 95%; margin-bottom: 32px; }
+	.command { font-size: 18px; color: #3bdbff; }
+	.command-table { text-align: left; border: none; border-collapse: collapse; }
+	.command-table th:first-child { width: 20%; }
+	.command-table td { padding-right: 12px; }
+	.command-table tr { border-bottom: 1px solid gray; }
 	h3 { text-decoration: underline; text-decoration-color: purple; }
 	
 </style>
@@ -19,9 +24,10 @@
 <body>
 <h1> Documentation - Cry Encryption </h1>
 
-Docs version 1.0.0.2 for Cry version 1.0.0.0
+Docs version 1.0.1.0 for Cry version 1.0.0.0
 <div class='section'>
 <h3> .cry encrypted file specification </h3>
+
 <table class='spec-table'>
 	<tr>
 		<th style='width:20%'> Byte Address </th>
@@ -67,7 +73,55 @@ Docs version 1.0.0.2 for Cry version 1.0.0.0
 	<tr>
 		<th> Argument(s) Syntax </th>
 		<th> Purpose </th>
-		<th> Example </th>
+		<th> Examples </th>
+	</tr>
+	<tr>
+		<td> encrypt key filename</td>
+		<td> Encrypts given with given key as password, and outputs as a .cry file. </td>
+		<td> <div class="command"> cry encrypt password123! "Documents\Random Stuff\data.txt"</div> <br /> Outputs to Documents\Random Stuff\data.cry </td>
+	</tr>
+	<tr>
+		<td> encrypt key filenames</td>
+		<td> Archives (compresses to zip) the given files, encrypts the .zip to .cry, then deletes the zip. </td>
+		<td>
+			<div class="command"> cry encrypt password123! "Documents\*.txt"</div> or
+			<div class="command"> cry encrypt password123! messages.txt messages2.txt random_image.png</div>
+		</td>
+	</tr>
+	<tr>
+		<td> -h "Password hint" </td>
+		<td> Hint flag: autogenerates a .hnt hint file for the password, for future reference. </td>
+		<td> <div class="command"> cry encrypt maggiethatcher1 data.txt -h "Favourite woman ever" </div> <br /> Outputs data.cry and data.hnt, which contains the text hint </td>
+	</tr>
+	<tr>
+		<td> -c </td>
+		<td> Certainty flag: cry will not ask 'are you sure' before deleting/overwriting files. </td>
+		<td> <div class="command"> cry encrypt securep4ssword data.txt -c </div> <br /> data.cry is automatically overwritten if it already exists </td>
+	</tr>
+	<tr>
+		<td> decrypt key filename</td>
+		<td> Attempts to decrypt given file in cry format with the given password, or outputs <em>Incorrect Password</em> if Key Test fails. </td>
+		<td> <div class="command"> cry decrypt password1984 data.cry </div> <br /> Outputs to whatever the original file extension was. </td>
+	</tr>
+	<tr>
+		<td> scramble key filename</td>
+		<td> Scrambles given .cry file with given key as password - note this is the same as unscrambling with given key. </td>
+		<td> <div class="command"> cry scramble password123! data.cry </div> <br /> Outputs to data.cry </td>
+	</tr>
+	<tr>
+		<td> locksmith filename </td>
+		<td> Creates an empty lock .lck file with given filename to specify sequences to encrypt files. See section below for more details. </td>
+		<td> <div class="command"> cry locksmith output </div> <br /> Creates output.lck </td>
+	</tr>
+	<tr>
+		<td> help </td>
+		<td> Returns list of commands and arguments. </td>
+		<td> <div class="command"> cry help </div> </td>
+	</tr>
+	<tr>
+		<td> version </td>
+		<td> Returns the installed version of cry in format (w.x.y.z). </td>
+		<td> <div class="command"> cry version </div> </td>
 	</tr>
 </table>
 </div>
@@ -76,30 +130,34 @@ Docs version 1.0.0.2 for Cry version 1.0.0.0
 <h4> Setup: </h4>
 This step aims to initialise all components to encrypt the main file and write the header.
 <ul>
-<li>Key string is divided into 4 pieces of unequal deterministic size.</li>
-<li>Each quarter is hashed separately to 8 bytes.</li>
-<li>32-byte hashkey produced by transforming these linearly and combining them.</li>
-<li>Pseudorandom generator initialised using information from both hashkey and key as seed.</li>
-<li>Version written to encrypted file as header, unencrypted.</li>
-<li>Key Test and Target Extension written into header using buffer encryption as below.</li>
+	<li>Key string is divided into 4 pieces of unequal deterministic size.</li>
+	<li>Each quarter is hashed separately to 8 bytes.</li>
+	<li>32-byte hashkey produced by transforming these linearly and combining them.</li>
+	<li>Pseudorandom generator initialised using information from both hashkey and key as seed.</li>
+	<li>Version written to encrypted file as header, unencrypted.</li>
+	<li>Key Test and Target Extension written into header using buffer encryption as below.</li>
 </ul>
 <h4> Buffer Encryption: </h4>
 This step aims to process each sequence of 32-bytes in the original file into encrypted data, and store them sequentially in the encrypted file. During encryption, the stored encryption hashkey is transformed.
 <ul>
-<li> Input file grouped into 32-byte buffered chunks.</li>
-<li> Buffer is xored with hashkey. </li>
-<li> New hash input is generated based on current key and pseudorandom value. </li>
-<li> New hashkey adopted using transformed hash input. </li>
-</ul>
-<h4> Scrambling: </h4>
-This step aims to add a layer of encryption derived from a different hash of the key, adding an additional layer of obfuscation.
-<ul>
-<li> todo </li>
+	<li> Input file grouped into 32-byte buffered chunks.</li>
+	<li> Buffer is xored with hashkey. </li>
+	<li> New hash input is generated based on current key and pseudorandom value. </li>
+	<li> New hashkey adopted using transformed hash input. </li>
 </ul>
 <h4> Asymmetric Processing: </h4>
 <ul>
-<li> todo </li>
+	<li> todo </li>
 </ul>
+<h4> Scrambling: </h4>
+This optional step aims to add a layer of obfuscation derived from a different hash of the key, acting as an extra encryption layer of varying effectiveness. On binary files with freeform data, this is more useful.
+<ul>
+	<li> todo </li>
+</ul>
+</div>
+<div class="section">
+	<h3> Locksmith </h3>
+	todo
 </div>
 </body>
 </html>
