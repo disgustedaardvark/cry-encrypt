@@ -66,6 +66,13 @@ namespace cry {
 		}
 	}
 
+	FileInfo::FileInfo() {
+		// default constructor
+		set_input_path("");
+		set_output_path("", "");
+		processing_mode = SCRAMBLING;
+	}
+
 	string FileInfo::get_input_file_path() {
 		return input_path;
 	}

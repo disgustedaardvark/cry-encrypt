@@ -24,13 +24,13 @@ namespace cry {
 		/**
 		* Current char position in the READING file (in)
 		*/
-		long long cursor;
+		longest cursor;
 		/**
 		* The char position which the buffer was just filled from - in the reading input file.
 		* So the first byte in the buffer matches whatever is at this position in the file [assuming no EOF].
 		* Only accurate to the last buffer fill from file. see fill_buffer()
 		*/
-		long long buffer_source;
+		longest buffer_source;
 		/**
 		* The encryption/decryption key
 		*/
@@ -67,9 +67,8 @@ namespace cry {
 		bool fill_buffer(int buffer_subsize);
 		/**
 		* Process the next set of bytes from the file input.
-		* @param mode is decrypt/encrypt
 		*/
-		bool process_next(ProcessingMode mode);
+		bool process_next();
 
 		/**
 		* Read a single 32-bit integer from the input file and returns it, shifting the cursor forward.
@@ -96,15 +95,6 @@ namespace cry {
 		* Called by decrypt/encrypt_buffer methods.
 		*/
 		void crypt_buffer();
-
-		/**
-		* Asymetrically decrypt the contents of the buffer, after symmetrically processing, using the stored key
-		*/
-		void decrypt_buffer();
-		/**
-		* Asymetrically encrypt the contents of the buffer, after symmetrically processing, using the stored key
-		*/
-		void encrypt_buffer();
 		/**
 		* Reset the buffer and cursor position to the start of the file
 		*/
@@ -134,12 +124,9 @@ namespace cry {
 #endif
 
 	public:
-		//Encryption(std::string file_in, std::string file_out); // TODO this constructor
-		Encryption(std::string key, std::string file_in, std::string file_in_extension, std::string file_out, std::string file_out_extension);
+		Encryption(std::string key, FileInfo file_info);
 		//~Encryption();
 
-		/*
-		**/
 		void encrypt();
 		void decrypt();
 		/**

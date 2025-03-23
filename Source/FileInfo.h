@@ -52,6 +52,8 @@ namespace cry {
 		*/
 		FileInfo(string input_file, ProcessingMode processing_mode);
 
+		FileInfo();
+
 		/**
 		* Returns true if the input file specified by path exists in the file system
 		*/

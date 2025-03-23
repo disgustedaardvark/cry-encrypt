@@ -5,11 +5,15 @@
 #include <stdexcept>
 #include <unordered_map>
 
+// equivalents, because encryption is symmetric
+#define encrypt_buffer() crypt_buffer()
+#define decrypt_buffer() crypt_buffer()
+
 namespace cry {
 
-	Encryption::Encryption(std::string key, std::string file_in, std::string file_in_extension,
-		std::string file_out, std::string file_out_extension) {
+	Encryption::Encryption(std::string key, FileInfo file_info) {
 		
+		this->file_info = file_info;
 		this->key = key;
 		generate_hash_key(key, key_hash);
 
@@ -40,11 +44,6 @@ namespace cry {
 
 		dev(std::cout << "Pseudorandom initialised." << std::endl);
 
-		// file paths
-		this->file_in = file_in;
-		this->file_extension_in = file_in_extension;
-		this->file_out = file_out;
-		this->file_extension_out = file_out_extension;
 		// jump to start of file
 		this->reset_cursor();
 		// clear the buffer
@@ -244,7 +243,7 @@ namespace cry {
 		return !(buffer[BUFFER_SIZE - 1] != '\0' && str[BUFFER_SIZE] != '\0');
 	}
 
-	bool Encryption::process_next(ProcessingMode mode) {
+	bool Encryption::process_next() {
 
 		// fill up the buffer with the next block of data to de/encrypt
 		bool done = fill_buffer();
@@ -253,13 +252,9 @@ namespace cry {
 		dev(std::cout << "\t";
 			print_buffer(ASCII));
 
-		// do any symmetric then asymmetric encryption/decryption on the buffer
-		switch (mode) {
-		case ENCRYPTING:
-			encrypt_buffer(); break;
-		case DECRYPTING:
-			decrypt_buffer(); break;
-		}
+		// do any symmetric encryption/decryption on the buffer
+		crypt_buffer();
+
 		// write processed data to output file
 		write_buffer();
 
@@ -310,7 +305,7 @@ namespace cry {
 		this->reset_buffer();
 
 		// keep encrypting until nothing is left
-		until (this->process_next(ENCRYPTING));
+		until (this->process_next());
 
 		// then continuously scramble bytes until done
 		//this->scramble();
@@ -320,20 +315,6 @@ namespace cry {
 		// always close the files once done!
 		file.close();
 		output.close();
-	}
-
-	void Encryption::encrypt_buffer() {
-#if ENCRYPTION == 1
-		// do symmetric encryption on the buffer
-		crypt_buffer();
-#endif
-	}
-
-	void Encryption::decrypt_buffer() {
-#if ENCRYPTION == 1
-		// do symmetric decryption on the buffer
-		crypt_buffer();
-#endif
 	}
 
 	void Encryption::decrypt() {
@@ -386,13 +367,16 @@ namespace cry {
 			// extension can be max BUFFER_SIZE - 2 characters long (.extension\0)
 			// decrypt it first
 			decrypt_buffer();
-			for (int i = 0; i < BUFFER_SIZE && buffer[i] != '\0'; i++) file_extension_out += buffer[i];
+			string decrypted_extension = "";
+			for (int i = 0; i < BUFFER_SIZE && buffer[i] != '\0'; i++) decrypted_extension += buffer[i];
+			// add the extension to the output file
+			file_info.set_output_extension(decrypted_extension);
 		}
 
 		// TODO y/n overwrite are you sure?
 		// remove old output file and create a new one under correct file extension to store decrypted data
-		std::cout << file_out << file_extension_out << std::endl;
-		output.open(file_out + file_extension_out, std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
+		std::cout << file_info.get_output_file_path() << std::endl;
+		output.open(file_info.get_output_file_path(), std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
 
 		// error getting output file, stop
 		if (!output) {
@@ -401,17 +385,9 @@ namespace cry {
 			return;
 		}
 
-		// TODO this should happen in the Main pipeline, not here
-		if (scramble_hint == (byte)1) {
-			// unscramble bytes in file body
-			//this->scramble();
-			// jump back to the right part of the file to decrypt
-			//file.seekg(BODY);
-		}
-
 		// decrypt file body:
 		// keep decrypting chunk by chunk until done
-		until (this->process_next(DECRYPT));
+		until (this->process_next());
 
 		std::cout << "Decryption complete" << std::endl;
 
