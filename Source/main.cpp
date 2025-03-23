@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <map>
 #include "Encryption.h"
 
 using namespace std;
@@ -15,13 +16,7 @@ std::string currentWorkingDirectory = "";
 #if DRIVER==1
 int main(int argc, char* argv[]) {
 
-	// turn args into c strings
-	vector<string> arguments;
-	vector<string> flags; // TODO
-	for (int i = 0; i < argc; i++) {
-		char* arg = argv[i];
-		arguments.push_back((string) arg);
-	}
+	
 
 	// process arguments:
 	
