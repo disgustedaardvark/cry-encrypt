@@ -136,6 +136,7 @@
     <ClInclude Include="Source\BigInt.h" />
     <ClInclude Include="Source\Dev.h" />
     <ClInclude Include="Source\Encryption.h" />
+    <ClInclude Include="Source\FileInfo.h" />
     <ClInclude Include="Source\Hash.h" />
     <ClInclude Include="Source\Pseudorandom.h" />
     <ClInclude Include="Source\Scrambler.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Source\BigInt.cpp" />
     <ClCompile Include="Source\Dev.cpp" />
     <ClCompile Include="Source\Encryption.cpp" />
+    <ClCompile Include="Source\FileInfo.cpp" />
     <ClCompile Include="Source\Hash.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Pseudorandom.cpp" />

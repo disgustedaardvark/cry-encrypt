@@ -244,7 +244,7 @@ namespace cry {
 		return !(buffer[BUFFER_SIZE - 1] != '\0' && str[BUFFER_SIZE] != '\0');
 	}
 
-	bool Encryption::process_next(Mode mode) {
+	bool Encryption::process_next(ProcessingMode mode) {
 
 		// fill up the buffer with the next block of data to de/encrypt
 		bool done = fill_buffer();
@@ -255,9 +255,9 @@ namespace cry {
 
 		// do any symmetric then asymmetric encryption/decryption on the buffer
 		switch (mode) {
-		case ENCRYPT:
+		case ENCRYPTING:
 			encrypt_buffer(); break;
-		case DECRYPT:
+		case DECRYPTING:
 			decrypt_buffer(); break;
 		}
 		// write processed data to output file
@@ -268,12 +268,12 @@ namespace cry {
 
 	void Encryption::encrypt() {
 		// open up the file to encrypt
-		file.open(file_in + file_extension_in, std::ios::binary);
+		file.open(file_info.get_input_file_path(), std::ios::binary);
 		// remove old output file and create a new one to store encrypted data
-		output.open(file_out + file_extension_out, std::ios::binary | 
+		output.open(file_info.get_output_file_path(), std::ios::binary |
 			std::fstream::in | std::fstream::out | std::fstream::trunc);
 
-		std::cout << "Encrypting file " << file_in << file_extension_in << " to " << file_out << file_extension_out << std::endl;
+		std::cout << "Encrypting file " << file_info.get_input_file_path() << " to " << file_info.get_output_file_path() << std::endl;
 
 		// error, stop
 		if (!file || !output) {
@@ -300,9 +300,9 @@ namespace cry {
 
 		// next write the file extension
 		reset_buffer();
-		for (int i = 0; i < BUFFER_SIZE && i < file_extension_in.length(); i++) { // TODO warn about fileext length limit
+		for (int i = 0; i < BUFFER_SIZE && i < file_info.get_input_extension().length(); i++) { // TODO warn about fileext length limit
 			// loop through the characters in the file extension and add them to the buffer
-			buffer[i] = file_extension_in[i];
+			buffer[i] = file_info.get_input_extension()[i];
 		}
 		encrypt_buffer();
 		write_full_buffer();
@@ -310,7 +310,7 @@ namespace cry {
 		this->reset_buffer();
 
 		// keep encrypting until nothing is left
-		until (this->process_next(ENCRYPT));
+		until (this->process_next(ENCRYPTING));
 
 		// then continuously scramble bytes until done
 		//this->scramble();
@@ -338,7 +338,7 @@ namespace cry {
 
 	void Encryption::decrypt() {
 		// open up the file to decrypt
-		file.open(file_in + file_extension_in, std::ios::binary);
+		file.open(file_info.get_input_file_path(), std::ios::binary);
 		
 		// error getting output file, stop
 		if (!file) {

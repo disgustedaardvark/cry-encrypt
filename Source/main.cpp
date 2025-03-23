@@ -4,12 +4,13 @@
 #include <iostream>
 #include <vector>
 #include "Encryption.h"
-#include "WinBase.h"
 
 using namespace std;
 using namespace cry;
 
 #define DRIVER 1
+
+std::string currentWorkingDirectory = "";
 
 #if DRIVER==1
 int main(int argc, char* argv[]) {
@@ -54,7 +55,7 @@ int main(int argc, char* argv[]) {
 	else if (arguments.at(1) == "encrypt") {
 
 	}
-	else if (arguments.at(2) == "decrypt") {
+	else if (arguments.at(1) == "decrypt") {
 
 	}
 	else {
@@ -67,23 +68,17 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 		if (argc < 3) {
-
+			// no key has been specified
+			cerr << "Cannot process " << arguments.at(1) << " without a encryption/decryption key" << endl;
+			return 1;
 		}
+
+		// encrypt or decrypt the file TODO
 	}
 	
 }
 
-namespace cry {
-	// utility methods
-
-	/**
-	* returns true if given file exists in windows file system and can be accessed
-	*/
-	bool fileExists(string path) {
-		return GetFileAttributes(wstring(path.begin(), path.end()).c_str()) == INVALID_FILE_ATTRIBUTES;
-	}
-}
-
+// TODO remove this method
 int test() {
 
 	// if input_path is a .cry file, decrypt it and store in a file based on the header data

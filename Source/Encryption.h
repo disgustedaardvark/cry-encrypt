@@ -4,8 +4,8 @@
 #include "Dev.h"
 #include "Pseudorandom.h"
 #include "Hash.h"
+#include "FileInfo.h"
 
-#define FILE_EXTENSION ".cry"
 #define KEY_TEST "AmyAkaSpentGladiatorVersionTwo"
 #define HEADER 0
 // where the payload (ciphertext) starts
@@ -14,17 +14,10 @@
 
 namespace cry {
 
-	enum Mode {
-		DECRYPT, ENCRYPT
-	};
-
 	class Encryption {
 
 	private:
-		std::string file_in;
-		std::string file_out;
-		std::string file_extension_in;
-		std::string file_extension_out;
+		FileInfo file_info;
 		std::ifstream file;
 		std::fstream output;
 		char buffer[BUFFER_SIZE]; // 32 bytes
@@ -76,7 +69,7 @@ namespace cry {
 		* Process the next set of bytes from the file input.
 		* @param mode is decrypt/encrypt
 		*/
-		bool process_next(Mode mode);
+		bool process_next(ProcessingMode mode);
 
 		/**
 		* Read a single 32-bit integer from the input file and returns it, shifting the cursor forward.
