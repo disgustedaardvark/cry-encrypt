@@ -70,7 +70,9 @@ namespace cry {
 		// default constructor
 		set_input_path("");
 		set_output_path("", "");
-		processing_mode = SCRAMBLING;
+		processing_mode = NONE;
+		overwrite_without_asking = false;
+		key_hint = NO_KEY_HINT;
 	}
 
 	string FileInfo::get_input_file_path() {
@@ -81,5 +83,13 @@ namespace cry {
 	}
 	string FileInfo::get_input_extension() {
 		return file_in_extension;
+	}
+
+	void FileInfo::set_create_hint_mode(string hint) {
+		this->key_hint = hint;
+	}
+
+	void FileInfo::set_overwrite_prompt_mode(bool new_value) {
+		this->overwrite_without_asking = new_value;
 	}
 }

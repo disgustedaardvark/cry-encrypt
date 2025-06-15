@@ -8,6 +8,8 @@
 #define FILE_EXTENSION ".cry"
 // how many chars, including dot, in file extension
 #define FILE_EXTENSION_CHARS 4
+// if no hint file should be generated, specify this as the hint
+#define NO_KEY_HINT ""
 
 using namespace std;
 
@@ -28,6 +30,8 @@ namespace cry {
 		string file_in_extension;
 		string file_out_name;
 		string file_out_extension;
+		string key_hint;
+		bool overwrite_without_asking;
 		ProcessingMode processing_mode;
 
 		/**
@@ -74,6 +78,16 @@ namespace cry {
 		string get_input_file_path();
 		string get_output_file_path();
 		string get_input_extension();
+
+		/**
+		* Param is true if we should overwrite files WITHOUT asking the user if they are sure
+		*/
+		void set_overwrite_prompt_mode(bool new_value);
+		/**
+		* If string is not empty, a .hnt hint file will be created with the specified password hint
+		*/
+		void set_create_hint_mode(string hint);
+
 
 	};
 
