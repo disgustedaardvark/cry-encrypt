@@ -6,13 +6,15 @@
 #define ILLEGAL_CHARS "<>:\"/|?*"
 // the file extension of an encrypted file
 #define FILE_EXTENSION ".cry"
+// how many chars, including dot, in file extension
+#define FILE_EXTENSION_CHARS 4
 
 using namespace std;
 
 namespace cry {
 
 	enum ProcessingMode {
-		ENCRYPTING, DECRYPTING, SCRAMBLING
+		NONE, ENCRYPTING, DECRYPTING, SCRAMBLING
 	};
 
 	/**

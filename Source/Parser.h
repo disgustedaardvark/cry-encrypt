@@ -16,10 +16,8 @@ namespace cry {
 		vector<string> full_command;
 		// the non-flag arguments
 		vector<string> arguments;
-		// flags (e.g. 'h') and their associated value, which may be null
+		// flags (e.g. 'h') and their associated value
 		map<char, string> flags;
-		// map between possible flags and whether that flag takes an argument
-		static map<char, bool> flag_args;
 
 	public:
 		Parser(char* args[], int count);
@@ -27,7 +25,5 @@ namespace cry {
 		FileInfo parse();
 
 	};
-
-	map<char, bool> Parser::flag_args;
 
 }
