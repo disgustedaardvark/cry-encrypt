@@ -16,10 +16,17 @@ std::string currentWorkingDirectory = "";
 #if DRIVER==1
 int main(int argc, char* argv[]) {
 
-	
+	// SEE parser instead
 
 	// process arguments:
+	vector<string> arguments;
+	for (int i = 0; i < argc; i++) {
+		// extract flags:
+		if ()
+		arguments.push_back((string) argv[i]);
+	}
 	
+
 	// first, utility commands
 	switch (argc) {
 	case 1:
@@ -44,18 +51,36 @@ int main(int argc, char* argv[]) {
 	}
 
 	// determine mode of operation
+	ProcessingMode mode = NONE;
+	// extract the arguments
+	string key;
+	string file_names;
+	// select desired mode 
 	if (arguments.at(1) == "scramble") {
-		// call the scrambler TODO
+		mode = SCRAMBLING;
+		key = arguments.at(2);
+		key = arguments.at(2);
 	}
 	else if (arguments.at(1) == "encrypt") {
-
+		mode = ENCRYPTING;
 	}
 	else if (arguments.at(1) == "decrypt") {
-
+		mode = DECRYPTING;
 	}
 	else {
 		// otherwise, assume this is the shorthand command:
 		// $ cry filename key
+		// determine whether to encrypt or decrypt based on whether the supplied file ends in .cry
+		string arg1 = arguments.at(1);
+		if ((arg1.length() >= FILE_EXTENSION_CHARS) 
+			&& (arg1.substr(arg1.length() - FILE_EXTENSION_CHARS, arg1.length()) == FILE_EXTENSION)) {
+				// file is a CRY file, so decrypt
+			mode = DECRYPTING;
+		}
+		else {
+			mode = ENCRYPTING;
+		}
+		 
 		// so check file exists
 		if (!fileExists(arguments.at(1))) {
 			// file does not exist/inaccessible
@@ -72,7 +97,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 }
-
+/*
 // TODO remove this method
 int test() {
 
@@ -137,7 +162,7 @@ int test() {
 	encryption.destroy_key();
 
 	return 0;
-}
+}*/
 #else
 // Here a test main method for other purposes
 int main() {
