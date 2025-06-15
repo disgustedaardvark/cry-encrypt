@@ -35,6 +35,10 @@ namespace cry {
 	* Loads the version as an array of 4 bytes, with branch at 0 and patch at 3
 	*/
 	void version_as_byte_array(byte bytes[VERSION_SIZE], int32 version = VERSION);
+	/**
+	* Prints the help menu to console
+	*/
+	void print_help();
 
 	// this is a ridiculous solution
 	dev(typedef enum PrintMode { BINARY COMMA HEX COMMA ASCII } PrintMode);

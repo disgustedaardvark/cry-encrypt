@@ -28,4 +28,9 @@ namespace cry {
 
 		return version_string;
 	}
+
+	void print_help() {
+		// print the help menu
+		std::cout << "Help menu: coming soon" << std::endl; // TODO
+	}
 }
