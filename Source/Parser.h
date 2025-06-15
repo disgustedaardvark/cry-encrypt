@@ -20,9 +20,13 @@ namespace cry {
 		map<char, string> flags;
 
 	public:
+		// provide the argvs from calling the program
 		Parser(char* args[], int count);
-
-		FileInfo parse();
+		/**
+		* Given empty fileinfo, populate it from the command line args.
+		* Returns true if successful, false if command was invalid.
+		*/
+		bool parse(FileInfo* file_info);
 
 	};
 
